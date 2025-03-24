@@ -1,1 +1,17 @@
-/* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Default light mode */
+html {
+  @apply bg-white text-black; /* Light mode by default */
+}
+
+/* Dark mode with dark: prefix */
+.dark {
+  @apply bg-black text-white; /* Ensure root dark mode */
+}
+
+
