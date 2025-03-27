@@ -4,6 +4,7 @@ import { PublicLayoutComponent } from './layouts/public-layout/public-layout.com
 import { AppLayoutComponent } from './layouts/app-layout/app-layout.component';
 import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 import { TasksComponent } from './features/tasks/tasks.component';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -11,6 +12,8 @@ export const routes: Routes = [
     component: PublicLayoutComponent,
     children: [
       { path: '', component: LandingPageComponent },
+      { path: 'auth/login', loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent) },
+      { path: 'auth/signup', loadComponent: () => import('./pages/sign-up/sign-up.component').then(m => m.SignUpComponent) },
     ],
   },
   {
