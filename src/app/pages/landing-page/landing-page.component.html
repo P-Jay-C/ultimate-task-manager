@@ -1,0 +1,118 @@
+<!-- landing-page.component.html -->
+<div class="min-h-screen flex flex-col bg-surface text-surface-contrast">
+  <!-- Hero Section -->
+  <section class="flex flex-col items-center justify-center text-center py-20 px-4">
+    <h1 class="text-5xl font-bold mb-4">Welcome to Ultimate ToDo</h1>
+    <p class="text-xl text-muted-color max-w-2xl mb-8">
+      Organize your tasks, boost productivity, and achieve your goals with the ultimate todo app designed for individuals, teams, and enterprises.
+    </p>
+    <p-button
+      label="Get Started"
+      icon="pi pi-arrow-right"
+      (click)="navigateToApp()"
+      styleClass="p-button-raised p-button-lg">
+    </p-button>
+    <a [routerLink]="['/login']" class="mt-4 text-gray-600 dark:text-gray-300 hover:text-primary-500">Already have an account? Login</a>
+    <div class="mt-12 flex flex-col items-center gap-2">
+      <span class="text-lg text-muted-color">Scroll to Explore</span>
+      <span class="animate-bounce h-8 w-8 bg-primary text-primary-contrast rounded-full flex items-center justify-center">
+        <i class="pi pi-arrow-down"></i>
+      </span>
+    </div>
+  </section>
+  <!-- Features Section -->
+  <section class="py-20 px-4 bg-panel">
+    <h2 class="text-3xl font-bold text-center mb-12">Tailored for Everyone</h2>
+    <div class="flex flex-wrap justify-center gap-8">
+      <div
+        pAnimateOnScroll
+        enterClass="animate-enter fade-in-10 slide-in-from-l-8 animate-duration-1000"
+        class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4 bg-card">
+        <div class="rounded-full bg-primary text-primary-contrast w-12 h-12 flex items-center justify-center">
+          <i class="pi pi-user !text-2xl"></i>
+        </div>
+        <span class="text-2xl font-bold">Individual</span>
+        <span class="text-muted-color text-center">
+          Manage personal tasks effortlessly with intuitive tools and reminders.
+        </span>
+      </div>
+      <div
+        pAnimateOnScroll
+        enterClass="animate-enter fade-in-10 animate-duration-1000"
+        class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4 bg-card">
+        <div class="rounded-full bg-primary text-primary-contrast w-12 h-12 flex items-center justify-center">
+          <i class="pi pi-users !text-2xl"></i>
+        </div>
+        <span class="text-2xl font-bold">Team</span>
+        <span class="text-muted-color text-center">
+          Collaborate seamlessly with shared task lists and real-time updates.
+        </span>
+      </div>
+      <div
+        pAnimateOnScroll
+        enterClass="animate-enter fade-in-10 slide-in-from-r-8 animate-duration-1000"
+        class="flex flex-col border border-surface shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4 bg-card">
+        <div class="rounded-full bg-primary text-primary-contrast w-12 h-12 flex items-center justify-center">
+          <i class="pi pi-building !text-2xl"></i>
+        </div>
+        <span class="text-2xl font-bold">Enterprise</span>
+        <span class="text-muted-color text-center">
+          Scale productivity with advanced analytics and enterprise-grade security.
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="py-20 px-4">
+    <h2 class="text-3xl font-bold text-center mb-12">What Our Users Say</h2>
+    <div class="flex flex-wrap justify-center gap-8">
+      <div
+        pAnimateOnScroll
+        enterClass="animate-enter fade-in-10 slide-in-from-t-20 animate-duration-1000"
+        class="flex flex-col border border-primary-200 shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4 bg-card">
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png"
+          shape="circle"
+          size="xlarge" />
+        <span class="text-2xl font-medium">Jenna Thompson</span>
+        <span class="text-muted-color text-center">
+          "Ultimate ToDo transformed how I manage my daily tasks. It's a game-changer!"
+        </span>
+      </div>
+      <div
+        pAnimateOnScroll
+        enterClass="animate-enter fade-in-10 slide-in-from-b-20 animate-duration-1000"
+        class="flex flex-col border border-primary-200 shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4 bg-card">
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/asiyajavayant.png"
+          shape="circle"
+          size="xlarge" />
+        <span class="text-2xl font-medium">Isabel Garcia</span>
+        <span class="text-muted-color text-center">
+          "Our team's productivity soared thanks to its collaboration features."
+        </span>
+      </div>
+      <div
+        pAnimateOnScroll
+        enterClass="animate-enter fade-in-10 slide-in-from-t-20 animate-duration-1000"
+        class="flex flex-col border border-primary-200 shadow-lg justify-center items-center max-w-80 rounded-2xl p-8 gap-4 bg-card">
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/onyamalimba.png"
+          shape="circle"
+          size="xlarge" />
+        <span class="text-2xl font-medium">Xavier Mason</span>
+        <span class="text-muted-color text-center">
+          "The analytics help us optimize workflows like never before."
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8 px-4 bg-panel text-center">
+    <p class="text-muted-color">
+      © 2025 Ultimate ToDo. All rights reserved.
+    </p>
+  </footer>
+</div>

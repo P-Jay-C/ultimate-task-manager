@@ -4,14 +4,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Default light mode */
 html {
-  @apply bg-white text-black; /* Light mode by default */
+  @apply bg-white text-black;
+    scroll-behavior: smooth;
 }
 
-/* Dark mode with dark: prefix */
-.dark {
-  @apply bg-black text-white; /* Ensure root dark mode */
+html.dark {
+  @apply bg-black text-white;
 }
 
+.bg-panel {
+  @apply bg-gray-100 dark:bg-gray-900;
+}
+
+.text-muted {
+  @apply text-gray-600 dark:text-gray-400;
+}
 

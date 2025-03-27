@@ -1,0 +1,21 @@
+/* Custom animations */
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.bg-card {
+  @apply bg-white dark:bg-gray-800;
+}
+
+.text-surface-contrast {
+  @apply text-black dark:text-white;
+}
