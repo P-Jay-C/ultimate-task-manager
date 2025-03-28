@@ -1,1 +1,123 @@
-<p>sign-up works!</p>
+<div class="flex min-h-screen items-center justify-center bg-gray-100 px-4 dark:bg-gray-900">
+  <div class="w-full max-w-md rounded-xl bg-white p-8 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+    <h2 class="mb-8 text-center text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-100">
+      Sign Up
+    </h2>
+
+    <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <!-- Email Field -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Email Address
+        </label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+          [class.border-red-500]="f['email'].touched && f['email'].invalid"
+          placeholder="you@example.com"
+        />
+        <div
+          *ngIf="f['email'].touched && f['email'].invalid"
+          class="mt-1 text-sm text-red-500"
+        >
+          <span *ngIf="f['email'].errors?.['required']">Email is required.</span>
+          <span *ngIf="f['email'].errors?.['email']">Please enter a valid email.</span>
+        </div>
+      </div>
+
+      <!-- Username Field -->
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Username
+        </label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+          [class.border-red-500]="f['username'].touched && f['username'].invalid"
+          placeholder="johndoe"
+        />
+        <div
+          *ngIf="f['username'].touched && f['username'].invalid"
+          class="mt-1 text-sm text-red-500"
+        >
+          <span *ngIf="f['username'].errors?.['required']">Username is required.</span>
+          <span *ngIf="f['username'].errors?.['minlength']">
+            Username must be at least 3 characters long.
+          </span>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Password
+        </label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+          [class.border-red-500]="f['password'].touched && f['password'].invalid"
+          placeholder="••••••••"
+        />
+        <div
+          *ngIf="f['password'].touched && f['password'].invalid"
+          class="mt-1 text-sm text-red-500"
+        >
+          <span *ngIf="f['password'].errors?.['required']">Password is required.</span>
+          <span *ngIf="f['password'].errors?.['minlength']">
+            Password must be at least 6 characters long.
+          </span>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div>
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Confirm Password
+        </label>
+        <input
+          id="confirmPassword"
+          type="password"
+          formControlName="confirmPassword"
+          class="mt-1 block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+          [class.border-red-500]="f['confirmPassword'].touched && (f['confirmPassword'].invalid || signUpForm.errors?.['passwordMismatch'])"
+          placeholder="••••••••"
+        />
+        <div
+          *ngIf="f['confirmPassword'].touched"
+          class="mt-1 text-sm text-red-500"
+        >
+          <span *ngIf="f['confirmPassword'].errors?.['required']">Password confirmation is required.</span>
+          <span *ngIf="signUpForm.errors?.['passwordMismatch'] && !f['confirmPassword'].errors?.['required']">
+            Passwords do not match.
+          </span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <p-button
+        type="submit"
+        label="Sign Up"
+        styleClass="w-full p-button-raised p-button-primary text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 dark:hover:bg-indigo-600 mt-4"
+        [disabled]="signUpForm.invalid || loading"
+        [loading]="loading"
+      ></p-button>
+    </form>
+
+    <!-- Login Link -->
+    <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+      Already have an account?
+      <a
+        [routerLink]="['/login']"
+        class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+      >
+        Sign In
+      </a>
+    </p>
+  </div>
+</div>
