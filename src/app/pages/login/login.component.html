@@ -1,1 +1,65 @@
-<p>login works!</p>
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">Login</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <!-- Email Field -->
+      <div>
+        <label for="email" class="block text-gray-700 dark:text-gray-300">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="p-inputtext w-full"
+          [class.ng-invalid]="f['email'].touched && f['email'].invalid"
+          placeholder="Enter your email"
+        />
+        <div
+          *ngIf="f['email'].touched && f['email'].invalid"
+          class="text-red-500 text-sm mt-1"
+        >
+          <span *ngIf="f['email'].errors?.['required']">Email is required.</span>
+          <span *ngIf="f['email'].errors?.['email']">Please enter a valid email.</span>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div>
+        <label for="password" class="block text-gray-700 dark:text-gray-300">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="p-inputtext w-full"
+          [class.ng-invalid]="f['password'].touched && f['password'].invalid"
+          placeholder="Enter your password"
+        />
+        <div
+          *ngIf="f['password'].touched && f['password'].invalid"
+          class="text-red-500 text-sm mt-1"
+        >
+          <span *ngIf="f['password'].errors?.['required']">Password is required.</span>
+          <span *ngIf="f['password'].errors?.['minlength']">
+            Password must be at least 6 characters long.
+          </span>
+        </div>
+      </div>
+
+      <br>
+      <!-- Submit Button -->
+      <p-button
+        type="submit"
+        label="Login"
+        styleClass="p-button-raised p-button-primary w-full"
+        [disabled]="loginForm.invalid || loading"
+        [loading]="loading"
+      ></p-button>
+    </form>
+
+    <!-- Signup Link -->
+    <p class="mt-4 text-center text-gray-600 dark:text-gray-400">
+      Don’t have an account? <a [routerLink]="['/signup']" class="text-primary-500 hover:underline">Sign Up</a>
+    </p>
+  </div>
+</div>

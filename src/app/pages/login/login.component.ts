@@ -1,35 +1,57 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
 import { LoginRequest } from '../../core/models/login-request';
-import { ErrorResponse } from '../../core/models/error-response';
 import { RouterLink } from '@angular/router';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, ButtonModule, InputTextModule, ToastModule,RouterLink],
-  providers: [MessageService],
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, RouterLink, NgIf],
   templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'],
 })
-export class LoginComponent {
-  loginRequest: LoginRequest = { username: '', password: '' };
+export class LoginComponent implements OnInit {
+  loginForm!: FormGroup;
+  loading = false;
 
-  constructor(private authService: AuthService, private messageService: MessageService) {}
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService
+  ) {}
 
-  onSubmit() {
-    this.authService.login(this.loginRequest).subscribe({
-      next: () => {},
-      error: (errorResponse: ErrorResponse) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: `${errorResponse.status} - ${errorResponse.error}`,
-          detail: errorResponse.message,
-        });
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    });
+  }
+
+  get f() {
+    return this.loginForm.controls;
+  }
+
+  onSubmit(): void {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+    const loginRequest: LoginRequest = this.loginForm.value;
+
+    this.authService.login(loginRequest).subscribe({
+      next: () => {
+        this.loading = false;
+      },
+      error: (errorResponse: any) => {
+        this.loading = false;
+      },
+      complete: () => {
+        this.loading = false;
       },
     });
   }
