@@ -1,0 +1,92 @@
+<div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
+  <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">
+    {{ config.data?.task ? 'Edit Task' : 'Add Task' }}
+  </h2>
+
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+        <input
+          formControlName="title"
+          class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
+          [class.border-red-500]="taskForm.get('title')?.touched && taskForm.get('title')?.invalid"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
+        <input
+          type="date"
+          formControlName="dueDate"
+          class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
+          [class.border-red-500]="taskForm.get('dueDate')?.touched && taskForm.get('dueDate')?.invalid"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
+        <p-dropdown
+          formControlName="priority"
+          [options]="priorities"
+          class="mt-1 w-full"
+          styleClass="w-full"
+        ></p-dropdown>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+        <p-dropdown
+          formControlName="status"
+          [options]="statuses"
+          class="mt-1 w-full"
+          styleClass="w-full"
+        ></p-dropdown>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Progress (%)</label>
+        <input
+          type="number"
+          formControlName="progress"
+          class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
+          [class.border-red-500]="taskForm.get('progress')?.touched && taskForm.get('progress')?.invalid"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+        <input
+          formControlName="category"
+          class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+        <textarea
+          formControlName="description"
+          class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
+          rows="3"
+        ></textarea>
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (comma-separated)</label>
+        <input
+          formControlName="tags"
+          class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
+          placeholder="e.g., work, urgent"
+        />
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end gap-4">
+      <p-button
+        type="submit"
+        [label]="config.data?.task ? 'Update' : 'Create'"
+        styleClass="p-button-raised p-button-primary bg-indigo-600 hover:bg-indigo-700 text-white"
+        [disabled]="taskForm.invalid || loading"
+        [loading]="loading"
+      ></p-button>
+      <p-button
+        label="Cancel"
+        styleClass="p-button-raised p-button-secondary"
+        (click)="close()"
+      ></p-button>
+    </div>
+  </form>
+</div>

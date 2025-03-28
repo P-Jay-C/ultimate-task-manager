@@ -1,171 +1,147 @@
-<div class="min-h-screen bg-gray-100 px-4 py-8 dark:bg-gray-900">
-  <div class="mx-auto max-w-4xl">
+<div class="min-h-screen bg-gray-50 px-6 py-8 dark:bg-gray-900">
+  <div class="mx-auto max-w-6xl">
     <!-- Header -->
-    <h1 class="mb-6 text-center text-3xl font-bold text-gray-800 dark:text-gray-100">Your Tasks</h1>
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Your Tasks</h1>
+      <div class="flex gap-4">
+        <p-button
+          label="Add Task"
+          styleClass="p-button-raised p-button-primary bg-indigo-600 hover:bg-indigo-700 text-white"
+          (click)="openAddTaskDialog()"
+        ></p-button>
+      </div>
+    </div>
 
-    <!-- Filters -->
-    <div class="mb-6 flex flex-wrap gap-4">
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        (input)="applyFilters()"
-        placeholder="Search tasks..."
-        class="w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 sm:w-auto"
-      />
-      <input
-        type="text"
-        [(ngModel)]="categoryFilter"
-        (input)="applyFilters()"
-        placeholder="Filter by category"
-        class="w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 sm:w-auto"
-      />
+    <!-- Filters and Sorting -->
+    <div class="mb-8 flex flex-wrap gap-4">
+      <div class="relative w-full sm:w-64">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="onSearchInput($event)"
+          placeholder="Search tasks..."
+          class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500"
+        />
+        <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+          <i class="pi pi-search"></i>
+        </span>
+      </div>
+      <div class="relative w-full sm:w-64">
+        <p-autoComplete
+          [(ngModel)]="categoryFilter"
+          [suggestions]="filteredCategories"
+          (completeMethod)="filterCategories($event)"
+          (onSelect)="applyFilters(false, 'category')"
+          (input)="onCategoryInput($event)"
+          (onClear)="onCategoryClear()"
+          placeholder="Filter by category"
+          class="w-full"
+          inputStyleClass="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500"
+        ></p-autoComplete>
+        <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+          <i class="pi pi-filter"></i>
+        </span>
+      </div>
       <select
         [(ngModel)]="completedFilter"
         (change)="applyFilters()"
-        class="w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 sm:w-auto"
+        class="w-full sm:w-64 rounded-lg border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
       >
         <option [ngValue]="undefined">All</option>
         <option [ngValue]="true">Completed</option>
         <option [ngValue]="false">Not Completed</option>
       </select>
+      <div class="flex w-full sm:w-64 gap-2">
+        <select
+          [(ngModel)]="sortOption"
+          (change)="applySorting()"
+          class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
+        >
+          <option value="dueDate">Due Date</option>
+          <option value="priority">Priority</option>
+          <option value="status">Status</option>
+        </select>
+        <p-button
+          [icon]="sortDir === 'asc' ? 'pi pi-sort-amount-up' : 'pi pi-sort-amount-down'"
+          styleClass="p-button-text text-gray-600 dark:text-gray-100"
+          (click)="applySorting()"
+        ></p-button>
+      </div>
     </div>
 
-    <!-- Task Form -->
-    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="mb-8 rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-          <input
-            formControlName="title"
-            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
-            [class.border-red-500]="taskForm.get('title')?.touched && taskForm.get('title')?.invalid"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
-          <input
-            type="date"
-            formControlName="dueDate"
-            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
-            [class.border-red-500]="taskForm.get('dueDate')?.touched && taskForm.get('dueDate')?.invalid"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
-          <p-dropdown
-            formControlName="priority"
-            [options]="priorities"
-            class="mt-1 w-full"
-            styleClass="w-full"
-          ></p-dropdown>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-          <p-dropdown
-            formControlName="status"
-            [options]="statuses"
-            class="mt-1 w-full"
-            styleClass="w-full"
-          ></p-dropdown>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Progress (%)</label>
-          <input
-            type="number"
-            formControlName="progress"
-            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
-            [class.border-red-500]="taskForm.get('progress')?.touched && taskForm.get('progress')?.invalid"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-          <input
-            formControlName="category"
-            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
-          />
-        </div>
-        <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-          <textarea
-            formControlName="description"
-            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
-            rows="3"
-          ></textarea>
-        </div>
-        <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (comma-separated)</label>
-          <input
-            formControlName="tags"
-            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
-            placeholder="e.g., work, urgent"
-          />
-        </div>
-      </div>
-      <div class="mt-4 flex justify-end gap-4">
-        <p-button
-          type="submit"
-          [label]="editingTask ? 'Update Task' : 'Create Task'"
-          styleClass="p-button-raised p-button-primary text-white bg-indigo-600 hover:bg-indigo-700"
-          [disabled]="taskForm.invalid || loading"
-          [loading]="loading"
-        ></p-button>
-        <p-button
-          *ngIf="editingTask"
-          label="Cancel"
-          styleClass="p-button-raised p-button-secondary"
-          (click)="resetForm()"
-        ></p-button>
-      </div>
-    </form>
-
     <!-- Task List -->
-    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
-      <div *ngIf="tasks.length === 0 && !loading" class="text-center text-gray-600 dark:text-gray-400">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngIf="loading" class="col-span-full text-center text-gray-600 dark:text-gray-400">
+        <i class="pi pi-spin pi-spinner text-4xl"></i>
+      </div>
+      <div *ngIf="filteredTasks.length === 0 && !loading" class="col-span-full text-center text-gray-600 dark:text-gray-400">
         No tasks found.
       </div>
-      <div *ngFor="let task of tasks" class="border-b py-4 last:border-b-0">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ task.title }}</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">{{ task.description }}</p>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Due: {{ task.dueDate | date: 'medium' }}</p>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Status: {{ task.status }}</p>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Progress: {{ task.progress }}%</p>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Priority: {{ task.priority }}</p>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Category: {{ task.category || 'None' }}</p>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Tags: {{ getTagsAsString(task.tags) }}</p>
+      <div
+        *ngFor="let task of filteredTasks"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300 ease-in-out"
+      >
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex items-center gap-2">
+            <input
+              type="checkbox"
+              [(ngModel)]="task.completed"
+              (change)="toggleTaskCompletion(task)"
+              class="h-5 w-5 text-indigo-600"
+            />
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{{ task.title }}</h3>
           </div>
-          <div class="flex gap-2">
-            <p-button
-              label="Edit"
-              styleClass="p-button-raised p-button-secondary"
-              (click)="editTask(task)"
-            ></p-button>
-            <p-button
-              label="Delete"
-              styleClass="p-button-raised p-button-danger"
-              (click)="deleteTask(task.id)"
-            ></p-button>
-          </div>
+          <span
+            [ngClass]="{
+              'bg-green-100 text-green-800': task.status === 'COMPLETED',
+              'bg-yellow-100 text-yellow-800': task.status === 'IN_PROGRESS',
+              'bg-red-100 text-red-800': task.status === 'PENDING',
+              'bg-gray-100 text-gray-800': task.status === 'ARCHIVED'
+            }"
+            class="px-2 py-1 rounded-full text-xs font-medium"
+          >
+            {{ task.status }}
+          </span>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ task.description }}</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Due: {{ task.dueDate | date: 'medium' }}</p>
+        <div class="mt-4 flex gap-2">
+          <p-button
+            label="View Details"
+            styleClass="p-button-text text-indigo-600 dark:text-indigo-400 text-sm"
+            (click)="openTaskDetails(task)"
+          ></p-button>
+          <p-button
+            label="Edit"
+            styleClass="p-button-raised p-button-secondary text-sm"
+            (click)="openAddTaskDialog(task)"
+          ></p-button>
+          <p-button
+            label="Delete"
+            styleClass="p-button-raised p-button-danger text-sm"
+            (click)="deleteTask(task.id)"
+          ></p-button>
         </div>
       </div>
+    </div>
 
-      <!-- Pagination -->
-      <div *ngIf="totalPages > 1" class="mt-4 flex justify-between">
-        <p-button
-          label="Previous"
-          styleClass="p-button-raised"
-          [disabled]="page === 0 || loading"
-          (click)="prevPage()"
-        ></p-button>
-        <span class="text-gray-600 dark:text-gray-400">Page {{ page + 1 }} of {{ totalPages }}</span>
-        <p-button
-          label="Next"
-          styleClass="p-button-raised"
-          [disabled]="page >= totalPages - 1 || loading"
-          (click)="nextPage()"
-        ></p-button>
-      </div>
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="mt-8 flex justify-between items-center">
+      <p-button
+        label="Previous"
+        styleClass="p-button-raised bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100"
+        [disabled]="page === 0 || loading"
+        (click)="prevPage()"
+      ></p-button>
+      <span class="text-gray-600 dark:text-gray-400">
+        Showing {{ page * pageSize + 1 }}-{{ (page + 1) * pageSize > totalTasks ? totalTasks : (page + 1) * pageSize }} of {{ totalTasks }} tasks
+      </span>
+      <p-button
+        label="Next"
+        styleClass="p-button-raised bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100"
+        [disabled]="page >= totalPages - 1 || loading"
+        (click)="nextPage()"
+      ></p-button>
     </div>
   </div>
 </div>
