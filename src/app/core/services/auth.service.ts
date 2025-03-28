@@ -9,6 +9,7 @@ import { AuthResponse } from '../models/auth-response';
 import { ErrorResponse } from '../models/error-response';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import { MessageService } from 'primeng/api';
 
 // Define token payload structure with email
 interface TodoJwtPayload {
@@ -27,10 +28,11 @@ interface TodoJwtPayload {
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
   private authTokenKey = 'auth_token';
+  private refreshTokenKey = 'refresh_token';
   private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient, private router: Router, private messageService: MessageService) {
     const token = localStorage.getItem(this.authTokenKey);
     if (token) {
       this.loadUserFromToken(token);
@@ -61,18 +63,40 @@ export class AuthService {
 
   private handleAuthentication(authResponse: AuthResponse) {
     localStorage.setItem(this.authTokenKey, authResponse.token);
+    localStorage.setItem(this.refreshTokenKey, authResponse.refreshToken);
     this.currentUserSubject.next(authResponse);
     this.router.navigate(['/tasks']);
+  }
+
+  refreshToken(): Observable<SuccessResponse<AuthResponse>> {
+    const refreshToken = localStorage.getItem(this.refreshTokenKey);
+    if (!refreshToken) {
+      this.logout();
+      return throwError(() => new Error('No refresh token available'));
+    }
+    return this.http.post<SuccessResponse<AuthResponse>>(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
+      tap((response) => {
+        if (response.data?.token) {
+          this.handleAuthentication(response.data);
+        }
+      }),
+      catchError((err) => {
+        this.logout();
+        return this.handleError(err);
+      })
+    );
   }
 
   private loadUserFromToken(token: string) {
     try {
       const decoded: TodoJwtPayload = jwtDecode<TodoJwtPayload>(token);
+      const refreshToken = localStorage.getItem(this.refreshTokenKey) || '';
       const user: AuthResponse = {
-        id: Number(decoded.jti) || 0, // Use jti as ID
+        id: Number(decoded.jti) || 0,
         username: decoded.sub,
-        email: decoded.email || '', // Extract email from token
+        email: decoded.email || '',
         token,
+        refreshToken, // Include refreshToken
         roles: decoded.roles || ['USER'],
       };
       this.currentUserSubject.next(user);
@@ -96,7 +120,9 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem(this.authTokenKey);
+    localStorage.removeItem(this.refreshTokenKey);
     this.currentUserSubject.next(null);
+    this.messageService.add({ severity: 'info', summary: 'Logged Out', detail: 'Your session has ended.' });
     this.router.navigate(['/']);
   }
 
