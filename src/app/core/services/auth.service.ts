@@ -11,15 +11,15 @@ import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { MessageService } from 'primeng/api';
 
-// Define token payload structure with email
 interface TodoJwtPayload {
-  sub: string; // Username
+  sub: string; // Email
   jti: string; // Token ID
-  iss: string; // Issuer (UltimateToDo)
-  roles: string[]; // Roles array
-  email: string; // Email
-  iat: number; // Issued at
-  exp: number; // Expiration
+  iss: string; // Issuer
+  username: string; // Added username
+  roles: string[]; // Roles array (access token only)
+  type?: string; // "refresh" for refresh token
+  iat: number;
+  exp: number;
 }
 
 @Injectable({
@@ -32,7 +32,11 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router, private messageService: MessageService) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private messageService: MessageService
+  ) {
     const token = localStorage.getItem(this.authTokenKey);
     if (token) {
       this.loadUserFromToken(token);
@@ -44,6 +48,7 @@ export class AuthService {
       tap((response) => {
         if (response.data?.token) {
           this.handleAuthentication(response.data);
+          this.messageService.add({ severity: 'success', summary: 'Registered', detail: 'Welcome aboard!' });
         }
       }),
       catchError(this.handleError)
@@ -55,17 +60,11 @@ export class AuthService {
       tap((response) => {
         if (response.data?.token) {
           this.handleAuthentication(response.data);
+          this.messageService.add({ severity: 'success', summary: 'Logged In', detail: 'Welcome back!' });
         }
       }),
       catchError(this.handleError)
     );
-  }
-
-  private handleAuthentication(authResponse: AuthResponse) {
-    localStorage.setItem(this.authTokenKey, authResponse.token);
-    localStorage.setItem(this.refreshTokenKey, authResponse.refreshToken);
-    this.currentUserSubject.next(authResponse);
-    this.router.navigate(['/tasks']);
   }
 
   refreshToken(): Observable<SuccessResponse<AuthResponse>> {
@@ -87,21 +86,34 @@ export class AuthService {
     );
   }
 
+  private handleAuthentication(authResponse: AuthResponse) {
+    localStorage.setItem(this.authTokenKey, authResponse.token);
+    localStorage.setItem(this.refreshTokenKey, authResponse.refreshToken);
+    this.currentUserSubject.next(authResponse);
+    this.router.navigate(['/tasks']);
+  }
+
   private loadUserFromToken(token: string) {
     try {
       const decoded: TodoJwtPayload = jwtDecode<TodoJwtPayload>(token);
+      const now = Math.floor(Date.now() / 1000);
+      if (decoded.exp < now) {
+        this.messageService.add({ severity: 'warn', summary: 'Session Expired', detail: 'Please log in again.' });
+        this.logout();
+        return;
+      }
       const refreshToken = localStorage.getItem(this.refreshTokenKey) || '';
       const user: AuthResponse = {
         id: Number(decoded.jti) || 0,
-        username: decoded.sub,
-        email: decoded.email || '',
+        username: decoded.username || '',
+        email: decoded.sub || '',
         token,
-        refreshToken, // Include refreshToken
+        refreshToken,
         roles: decoded.roles || ['USER'],
       };
       this.currentUserSubject.next(user);
     } catch (error) {
-      console.error('Invalid token', error);
+      this.messageService.add({ severity: 'error', summary: 'Invalid Token', detail: 'Logging out due to invalid token.' });
       this.logout();
     }
   }
@@ -115,7 +127,14 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+    try {
+      const decoded: TodoJwtPayload = jwtDecode<TodoJwtPayload>(token);
+      return decoded.exp > Math.floor(Date.now() / 1000);
+    } catch (error) {
+      return false;
+    }
   }
 
   logout() {
@@ -134,7 +153,11 @@ export class AuthService {
       message: 'An unexpected error occurred',
       path: error.url || window.location.pathname,
     };
-
+    this.messageService.add({
+      severity: 'error',
+      summary: `${errorResponse.status} - ${errorResponse.error}`,
+      detail: errorResponse.message,
+    });
     console.error('Error Details:', errorResponse);
     return throwError(() => errorResponse);
   }
