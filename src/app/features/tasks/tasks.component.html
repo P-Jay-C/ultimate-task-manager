@@ -1,1 +1,171 @@
-<p>tasks works!</p>
+<div class="min-h-screen bg-gray-100 px-4 py-8 dark:bg-gray-900">
+  <div class="mx-auto max-w-4xl">
+    <!-- Header -->
+    <h1 class="mb-6 text-center text-3xl font-bold text-gray-800 dark:text-gray-100">Your Tasks</h1>
+
+    <!-- Filters -->
+    <div class="mb-6 flex flex-wrap gap-4">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (input)="applyFilters()"
+        placeholder="Search tasks..."
+        class="w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 sm:w-auto"
+      />
+      <input
+        type="text"
+        [(ngModel)]="categoryFilter"
+        (input)="applyFilters()"
+        placeholder="Filter by category"
+        class="w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500 sm:w-auto"
+      />
+      <select
+        [(ngModel)]="completedFilter"
+        (change)="applyFilters()"
+        class="w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 sm:w-auto"
+      >
+        <option [ngValue]="undefined">All</option>
+        <option [ngValue]="true">Completed</option>
+        <option [ngValue]="false">Not Completed</option>
+      </select>
+    </div>
+
+    <!-- Task Form -->
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="mb-8 rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+          <input
+            formControlName="title"
+            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            [class.border-red-500]="taskForm.get('title')?.touched && taskForm.get('title')?.invalid"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
+          <input
+            type="date"
+            formControlName="dueDate"
+            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            [class.border-red-500]="taskForm.get('dueDate')?.touched && taskForm.get('dueDate')?.invalid"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
+          <p-dropdown
+            formControlName="priority"
+            [options]="priorities"
+            class="mt-1 w-full"
+            styleClass="w-full"
+          ></p-dropdown>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+          <p-dropdown
+            formControlName="status"
+            [options]="statuses"
+            class="mt-1 w-full"
+            styleClass="w-full"
+          ></p-dropdown>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Progress (%)</label>
+          <input
+            type="number"
+            formControlName="progress"
+            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            [class.border-red-500]="taskForm.get('progress')?.touched && taskForm.get('progress')?.invalid"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+          <input
+            formControlName="category"
+            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+          />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+          <textarea
+            formControlName="description"
+            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            rows="3"
+          ></textarea>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (comma-separated)</label>
+          <input
+            formControlName="tags"
+            class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+            placeholder="e.g., work, urgent"
+          />
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end gap-4">
+        <p-button
+          type="submit"
+          [label]="editingTask ? 'Update Task' : 'Create Task'"
+          styleClass="p-button-raised p-button-primary text-white bg-indigo-600 hover:bg-indigo-700"
+          [disabled]="taskForm.invalid || loading"
+          [loading]="loading"
+        ></p-button>
+        <p-button
+          *ngIf="editingTask"
+          label="Cancel"
+          styleClass="p-button-raised p-button-secondary"
+          (click)="resetForm()"
+        ></p-button>
+      </div>
+    </form>
+
+    <!-- Task List -->
+    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
+      <div *ngIf="tasks.length === 0 && !loading" class="text-center text-gray-600 dark:text-gray-400">
+        No tasks found.
+      </div>
+      <div *ngFor="let task of tasks" class="border-b py-4 last:border-b-0">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ task.title }}</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">{{ task.description }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Due: {{ task.dueDate | date: 'medium' }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Status: {{ task.status }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Progress: {{ task.progress }}%</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Priority: {{ task.priority }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Category: {{ task.category || 'None' }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Tags: {{ getTagsAsString(task.tags) }}</p>
+          </div>
+          <div class="flex gap-2">
+            <p-button
+              label="Edit"
+              styleClass="p-button-raised p-button-secondary"
+              (click)="editTask(task)"
+            ></p-button>
+            <p-button
+              label="Delete"
+              styleClass="p-button-raised p-button-danger"
+              (click)="deleteTask(task.id)"
+            ></p-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="totalPages > 1" class="mt-4 flex justify-between">
+        <p-button
+          label="Previous"
+          styleClass="p-button-raised"
+          [disabled]="page === 0 || loading"
+          (click)="prevPage()"
+        ></p-button>
+        <span class="text-gray-600 dark:text-gray-400">Page {{ page + 1 }} of {{ totalPages }}</span>
+        <p-button
+          label="Next"
+          styleClass="p-button-raised"
+          [disabled]="page >= totalPages - 1 || loading"
+          (click)="nextPage()"
+        ></p-button>
+      </div>
+    </div>
+  </div>
+</div>
