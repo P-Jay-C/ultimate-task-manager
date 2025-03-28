@@ -15,8 +15,8 @@ interface TodoJwtPayload {
   sub: string; // Email
   jti: string; // Token ID
   iss: string; // Issuer
-  username: string; // Added username
-  roles: string[]; // Roles array (access token only)
+  username: string; // Username claim
+  roles?: string[]; // Optional, only in access token
   type?: string; // "refresh" for refresh token
   iat: number;
   exp: number;
@@ -31,6 +31,7 @@ export class AuthService {
   private refreshTokenKey = 'refresh_token';
   private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  private refreshing = false; // Track refresh in progress
 
   constructor(
     private http: HttpClient,
@@ -47,7 +48,7 @@ export class AuthService {
     return this.http.post<SuccessResponse<AuthResponse>>(`${this.apiUrl}/register`, request).pipe(
       tap((response) => {
         if (response.data?.token) {
-          this.handleAuthentication(response.data);
+          this.handleAuthentication(response.data, true); // Navigate on register
           this.messageService.add({ severity: 'success', summary: 'Registered', detail: 'Welcome aboard!' });
         }
       }),
@@ -59,7 +60,7 @@ export class AuthService {
     return this.http.post<SuccessResponse<AuthResponse>>(`${this.apiUrl}/login`, request).pipe(
       tap((response) => {
         if (response.data?.token) {
-          this.handleAuthentication(response.data);
+          this.handleAuthentication(response.data, true); // Navigate on login
           this.messageService.add({ severity: 'success', summary: 'Logged In', detail: 'Welcome back!' });
         }
       }),
@@ -73,24 +74,32 @@ export class AuthService {
       this.logout();
       return throwError(() => new Error('No refresh token available'));
     }
+    if (this.refreshing) {
+      return throwError(() => new Error('Refresh already in progress'));
+    }
+    this.refreshing = true;
     return this.http.post<SuccessResponse<AuthResponse>>(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
       tap((response) => {
         if (response.data?.token) {
-          this.handleAuthentication(response.data);
+          this.handleAuthentication(response.data, false); // No navigation on refresh
+          this.refreshing = false;
         }
       }),
       catchError((err) => {
+        this.refreshing = false;
         this.logout();
         return this.handleError(err);
       })
     );
   }
 
-  private handleAuthentication(authResponse: AuthResponse) {
+  private handleAuthentication(authResponse: AuthResponse, navigate: boolean) {
     localStorage.setItem(this.authTokenKey, authResponse.token);
     localStorage.setItem(this.refreshTokenKey, authResponse.refreshToken);
     this.currentUserSubject.next(authResponse);
-    this.router.navigate(['/tasks']);
+    if (navigate) {
+      this.router.navigate(['/tasks']);
+    }
   }
 
   private loadUserFromToken(token: string) {
@@ -109,7 +118,7 @@ export class AuthService {
         email: decoded.sub || '',
         token,
         refreshToken,
-        roles: decoded.roles || ['USER'],
+        roles: decoded.roles || ['USER'], // Safe default if roles missing
       };
       this.currentUserSubject.next(user);
     } catch (error) {
