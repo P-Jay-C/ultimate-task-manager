@@ -4,8 +4,9 @@ import { ButtonModule } from 'primeng/button';
 import { MenuItem } from 'primeng/api';
 import { ThemeService } from '../../../core/services/theme.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Subscription } from 'rxjs';
 import { ConfirmationService } from 'primeng/api';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router'; // Import Router
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -26,7 +27,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     public themeService: ThemeService,
     private authService: AuthService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private router: Router // Inject Router
   ) {
     this.authSubscription = new Subscription();
   }
@@ -49,7 +51,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private updateMenuItems(): void {
     if (this.authService.isAuthenticated()) {
       this.menuItems = [
-        { label: 'Profile', icon: 'pi pi-user', command: () => console.log('Profile clicked') },
+        {
+          label: 'Home',
+          icon: 'pi pi-home',
+          command: () => this.router.navigate(['/'])
+        },
+        {
+          label: 'Tasks',
+          icon: 'pi pi-list',
+          command: () => this.router.navigate(['/tasks'])
+        },
+        {
+          label: 'Kanban',
+          icon: 'pi pi-table',
+          command: () => this.router.navigate(['/kanban'])
+        },
+        {
+          label: 'Profile',
+          icon: 'pi pi-user',
+          command: () => console.log('Profile clicked')
+        },
         {
           label: 'Logout',
           icon: 'pi pi-sign-out',
@@ -60,8 +81,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       ];
     } else {
       this.menuItems = [
-        { label: 'Login', icon: 'pi pi-sign-in', command: () => console.log('Login clicked') },
-        { label: 'Register', icon: 'pi pi-user-plus', command: () => console.log('Register clicked') },
+        {
+          label: 'Login',
+          icon: 'pi pi-sign-in',
+          command: () => this.router.navigate(['/login'])
+        },
+        {
+          label: 'Register',
+          icon: 'pi pi-user-plus',
+          command: () => this.router.navigate(['/register'])
+        },
       ];
     }
   }

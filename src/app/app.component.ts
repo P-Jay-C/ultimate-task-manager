@@ -11,5 +11,5 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'Ultimate ToDo';
+  title = 'Ultimate TaskManager';
 }
