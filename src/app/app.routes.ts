@@ -5,6 +5,7 @@ import { AppLayoutComponent } from './layouts/app-layout/app-layout.component';
 import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 import { TasksComponent } from './features/tasks/tasks.component';
 import { AuthGuard } from './core/guards/auth.guard';
+import { KanbanComponent } from './features/kanban/kanban.component';
 
 export const routes: Routes = [
   {
@@ -22,6 +23,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'tasks', component: TasksComponent },
+      { path: 'kanban', component: KanbanComponent },
       // { path: 'analytics', loadComponent: () => import('./features/analytics/analytics.component').then(m => m.AnalyticsComponent) },
       // { path: 'settings', loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent) },
     ],

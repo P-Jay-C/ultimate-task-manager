@@ -21,3 +21,5 @@ export interface PagedTaskResponse {
   totalElements: number;
   totalPages: number;
 }
+
+export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';

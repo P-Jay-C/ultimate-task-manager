@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PagedTaskResponse, Task } from '../../core/models/task';
+import { PagedTaskResponse, Task, TaskStatus } from '../../core/models/task';
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { TaskService } from '../../core/services/task.service';
 import { SuccessResponse } from '../../core/models/success-response';
@@ -136,7 +136,7 @@ export class TasksComponent implements OnInit {
     const updatedTask = {
       ...task,
       completed: !task.completed,
-      status: task.completed ? 'PENDING' as 'PENDING' | 'COMPLETED' | 'IN_PROGRESS' | 'ARCHIVED' : 'COMPLETED' as 'PENDING' | 'COMPLETED' | 'IN_PROGRESS' | 'ARCHIVED',
+      status: task.completed ? 'COMPLETED' as TaskStatus : 'PENDING' as TaskStatus,
       progress: task.completed ? 0 : 100,
     };
     this.taskService.updateTask(task.id, updatedTask).subscribe({
