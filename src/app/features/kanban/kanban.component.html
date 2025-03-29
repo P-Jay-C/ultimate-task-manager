@@ -1,8 +1,13 @@
 <div class="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
   <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Kanban Board</h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
     <!-- Column for each status -->
-    <div *ngFor="let status of statuses" class="flex flex-col">
+    <div
+      *ngFor="let status of statuses"
+      class="flex flex-col"
+      (drop)="onDrop($event, status)"
+      (dragover)="onDragOver($event)"
+    >
       <div class="mb-4 p-3 rounded-lg shadow" [ngClass]="getStatusColor(status)">
         <h2 class="text-lg font-semibold">{{ status }}</h2>
         <p class="text-sm">{{ tasksByStatus[status].length }} task(s)</p>
@@ -23,7 +28,9 @@
         <p-card
           *ngFor="let task of tasksByStatus[status]"
           [header]="task.title"
-          class="shadow-md hover:shadow-lg transition-shadow duration-300"
+          class="shadow-md hover:shadow-lg transition-shadow duration-300 mb-4"
+          draggable="true"
+          (dragstart)="onDragStart($event, task)"
         >
           <p class="text-sm text-gray-600 dark:text-gray-400">{{ task.description || 'No description' }}</p>
           <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
