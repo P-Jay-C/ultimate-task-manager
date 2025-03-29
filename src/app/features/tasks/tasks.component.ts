@@ -16,7 +16,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
   selector: 'app-tasks',
   standalone: true,
   imports: [NgFor, NgIf, FormsModule, ButtonModule, DatePipe, NgClass, AutoCompleteModule],
-  providers: [DialogService],
+  providers: [],
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.css'],
 })

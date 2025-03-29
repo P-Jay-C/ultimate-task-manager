@@ -64,7 +64,7 @@ export class AddTaskComponent {
       dueDate: formattedDueDate,
       completed: this.taskForm.value.status === 'COMPLETED',
       tags: this.taskForm.value.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean),
-      userId: '', // Set by backend
+      userId: '',
       createdAt: this.config.data?.task?.createdAt || '',
       updatedAt: this.config.data?.task?.updatedAt || '',
     };
@@ -77,7 +77,7 @@ export class AddTaskComponent {
     action.subscribe({
       next: (response) => {
         this.loading = false;
-        this.ref.close(response.data); // Return the created/updated task
+        this.ref.close(response.data);
       },
       error: (err) => {
         console.error('Failed to save task:', err);

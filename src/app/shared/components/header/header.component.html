@@ -1,22 +1,33 @@
 <header class="bg-panel shadow p-4 flex justify-between items-center">
   <h1 class="text-2xl font-bold">Ultimate ToDo</h1>
   <div class="flex items-center space-x-4">
+    <!-- Theme Toggle Button -->
     <p-button
       [label]="themeService.isDarkMode ? 'Light Mode' : 'Dark Mode'"
       [icon]="themeService.isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
       (click)="themeService.toggleDarkMode()"
-      styleClass="p-button-text p-button-secondary">
-    </p-button>
+      styleClass="p-button-text p-button-secondary"
+    ></p-button>
+
+    <!-- Menubar with Sidebar Toggle and Dynamic Content -->
     <p-menubar [model]="menuItems" class="border-none bg-panel">
+      <!-- Sidebar Toggle Button -->
       <ng-template pTemplate="start">
         <p-button
           icon="pi pi-bars"
           (click)="toggleSidebar()"
-          styleClass="p-button-text p-button-secondary mr-2">
-        </p-button>
+          styleClass="p-button-text p-button-secondary mr-2"
+        ></p-button>
       </ng-template>
+
+      <!-- Username or Welcome Message -->
       <ng-template pTemplate="end">
-        <span>Welcome, User</span>
+        <span *ngIf="username" class="text-gray-700 dark:text-gray-300">
+          Welcome, {{ username }}
+        </span>
+        <span *ngIf="!username" class="text-gray-700 dark:text-gray-300">
+          Guest
+        </span>
       </ng-template>
     </p-menubar>
   </div>

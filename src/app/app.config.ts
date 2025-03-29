@@ -9,10 +9,11 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { AuthService } from './core/services/auth.service';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { importProvidersFrom } from '@angular/core';
 import { ToastModule } from 'primeng/toast';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { DialogService } from 'primeng/dynamicdialog';
 
 // Customize Aura for a black theme
 const BlackAura = definePreset(Aura, {
@@ -46,6 +47,8 @@ export const appConfig: ApplicationConfig = {
     }),
     AuthService,
     MessageService,
+    ConfirmationService,
+    DialogService,
     importProvidersFrom(ToastModule),
     provideAnimationsAsync(),
   ],
