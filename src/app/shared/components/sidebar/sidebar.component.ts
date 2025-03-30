@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SidebarModule } from 'primeng/sidebar';
 import { RouterLink } from '@angular/router';
 
@@ -11,4 +11,11 @@ import { RouterLink } from '@angular/router';
 })
 export class SidebarComponent {
   @Input() visible: boolean = false;
+  @Output() visibleChange = new EventEmitter<boolean>();
+
+  closeSidebar() {
+    this.visible = false;
+    this.visibleChange.emit(this.visible);
+  }
+
 }

@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         {
           label: 'Profile',
           icon: 'pi pi-user',
-          command: () => console.log('Profile clicked')
+          command: () => this.router.navigate(['/profile'])
         },
         {
           label: 'Logout',

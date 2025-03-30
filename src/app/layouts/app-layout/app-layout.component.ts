@@ -15,6 +15,12 @@ export class AppLayoutComponent {
   sidebarVisible = false;
 
   toggleSidebar() {
+    console.log('Before toggle - sidebarVisible:', this.sidebarVisible);
     this.sidebarVisible = !this.sidebarVisible;
+    console.log('After toggle - sidebarVisible:', this.sidebarVisible);
+  }
+
+  onSidebarVisibleChange(visible: boolean) {
+    this.sidebarVisible = visible;
   }
 }

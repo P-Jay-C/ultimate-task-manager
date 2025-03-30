@@ -2,7 +2,7 @@
 <div class="min-h-screen flex flex-col transition-colors duration-300">
   <app-header (sidebarToggle)="toggleSidebar()"></app-header>
   <div class="flex flex-1">
-    <app-sidebar [visible]="sidebarVisible"></app-sidebar>
+    <app-sidebar [visible]="sidebarVisible" (visibleChange)="onSidebarVisibleChange($event)"></app-sidebar>
     <main class="flex-1 p-6">
       <router-outlet></router-outlet>
     </main>

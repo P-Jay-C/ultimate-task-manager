@@ -42,7 +42,7 @@
           <i class="pi pi-filter"></i>
         </span>
       </div>
-      <select
+      <select title="completedFilter"
         [(ngModel)]="completedFilter"
         (change)="applyFilters()"
         class="w-full sm:w-64 rounded-lg border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
@@ -52,7 +52,7 @@
         <option [ngValue]="false">Not Completed</option>
       </select>
       <div class="flex w-full sm:w-64 gap-2">
-        <select
+        <select title="sortOption"
           [(ngModel)]="sortOption"
           (change)="applySorting()"
           class="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
@@ -83,7 +83,7 @@
       >
         <div class="flex justify-between items-start mb-4">
           <div class="flex items-center gap-2">
-            <input
+            <input title="task.completed"
               type="checkbox"
               [(ngModel)]="task.completed"
               (change)="toggleTaskCompletion(task)"

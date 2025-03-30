@@ -3,7 +3,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { Textarea } from 'primeng/inputtextarea';
 import { Task } from '../../../core/models/task';
 import { TaskService } from '../../../core/services/task.service';
@@ -11,7 +11,7 @@ import { TaskService } from '../../../core/services/task.service';
 @Component({
   selector: 'app-add-task',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, DropdownModule, Textarea],
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, SelectModule, Textarea],
   templateUrl: './add-task.component.html',
   styleUrls: ['./add-task.component.css'],
 })

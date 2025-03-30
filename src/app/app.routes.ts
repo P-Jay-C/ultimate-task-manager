@@ -24,8 +24,9 @@ export const routes: Routes = [
     children: [
       { path: 'tasks', component: TasksComponent },
       { path: 'kanban', component: KanbanComponent },
-      // { path: 'analytics', loadComponent: () => import('./features/analytics/analytics.component').then(m => m.AnalyticsComponent) },
-      // { path: 'settings', loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent) },
+      { path: 'analytics', loadComponent: () => import('./features/analytics/analytics.component').then(m => m.AnalyticsComponent) },
+      { path: 'settings', loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent) },
+      { path: 'profile',loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent) },
     ],
   },
   { path: '**', redirectTo: '' },

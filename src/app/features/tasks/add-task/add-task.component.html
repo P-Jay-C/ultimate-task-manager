@@ -7,7 +7,7 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-        <input
+        <input placeholder="title"
           formControlName="title"
           class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
           [class.border-red-500]="taskForm.get('title')?.touched && taskForm.get('title')?.invalid"
@@ -15,7 +15,7 @@
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
-        <input
+        <input placeholder="dueDate"
           type="date"
           formControlName="dueDate"
           class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
@@ -24,25 +24,25 @@
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
-        <p-dropdown
+        <p-select
           formControlName="priority"
           [options]="priorities"
           class="mt-1 w-full"
           styleClass="w-full"
-        ></p-dropdown>
+        ></p-select>
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-        <p-dropdown
+        <p-select
           formControlName="status"
           [options]="statuses"
           class="mt-1 w-full"
           styleClass="w-full"
-        ></p-dropdown>
+        ></p-select>
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Progress (%)</label>
-        <input
+        <input placeholder="progress"
           type="number"
           formControlName="progress"
           class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
@@ -51,14 +51,14 @@
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
-        <input
+        <input placeholder="category"
           formControlName="category"
           class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
         />
       </div>
       <div class="sm:col-span-2">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-        <textarea
+        <textarea placeholder="description"
           formControlName="description"
           class="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500"
           rows="3"
