@@ -6,7 +6,7 @@ import { ThemeService } from '../../../core/services/theme.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmationService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router'; // Import Router
+import { Router } from '@angular/router';
 import { NgIf } from '@angular/common';
 
 @Component({

@@ -1,0 +1,7 @@
+/* app-layout.component.css */
+main {
+  transition: margin-left 0.3s ease;
+}
+.sidebar-open main {
+  margin-left: 250px;
+}

@@ -9,12 +9,13 @@ import { TaskDetailsComponent } from '../tasks/task-details/task-details.compone
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { SuccessResponse } from '../../core/models/success-response';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-kanban',
   standalone: true,
   imports: [CardModule, ButtonModule, TableModule, NgClass,NgIf, NgFor, DynamicDialogModule,DatePipe],
-  providers: [DialogService],
+  providers: [],
   templateUrl: './kanban.component.html',
   styleUrls: ['./kanban.component.css'],
 })
@@ -35,25 +36,26 @@ export class KanbanComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
     this.loadTasksForAllStatuses();
   }
 
-  loadTasksForAllStatuses(): void {
+  loadTasksForAllStatuses(page: number = 0, size: number = 10): void {
     this.statuses.forEach((status) => {
       this.loading[status] = true;
-      this.taskService.getTasksByStatus(status).subscribe({
-        next: (response: SuccessResponse<PagedTaskResponse>) => {
+      this.taskService.getTasksByStatus(status, page, size).subscribe({
+        next: (response) => {
           this.tasksByStatus[status] = response.data?.content ?? [];
           this.loading[status] = false;
         },
         error: (err) => {
           console.error(`Failed to load ${status} tasks:`, err);
           this.loading[status] = false;
-        },
+        }
       });
     });
   }
@@ -76,32 +78,31 @@ export class KanbanComponent implements OnInit {
     }
   }
 
-  // Drag-and-Drop Handlers
   onDrop(event: any, targetStatus: TaskStatus): void {
-    const draggedTask: Task = event.dataTransfer.getData('task')
-      ? JSON.parse(event.dataTransfer.getData('task'))
-      : null;
-    if (!draggedTask) return;
+    event.preventDefault();
+    const column = (event.target as HTMLElement).closest('.flex-col');
+    if (column) column.classList.remove('drop-target');
 
-    const sourceStatus = draggedTask.status;
-    if (sourceStatus === targetStatus) return; // No change if dropped in same column
+    const draggedTask: Task = JSON.parse(event.dataTransfer.getData('task'));
+    if (!draggedTask || draggedTask.status === targetStatus) return;
 
-    // Update task status
-    const updatedTask = { ...draggedTask, status: targetStatus };
+    const updatedTask = {
+      ...draggedTask,
+      status: targetStatus,
+      progress: targetStatus === 'COMPLETED' ? 100 : draggedTask.progress,
+    };
     this.taskService.updateTask(draggedTask.id, updatedTask).subscribe({
-      next: (response: SuccessResponse<Task>) => {
-        // Remove from source column
-        this.tasksByStatus[sourceStatus] = this.tasksByStatus[sourceStatus].filter(
-          (t) => t.id !== draggedTask.id
-        );
-        // Add to target column
-        if(response.data){
-          this.tasksByStatus[targetStatus].push(response.data);
-        }
+      next: (response) => {
+        this.tasksByStatus[draggedTask.status] = this.tasksByStatus[draggedTask.status].filter(t => t.id !== draggedTask.id);
+        if (response.data) this.tasksByStatus[targetStatus].push(response.data);
       },
       error: (err) => {
-        console.error(`Failed to update task ${draggedTask.id} to ${targetStatus}:`, err);
-      },
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Update Failed',
+          detail: 'Could not move task: ' + err.message
+        });
+      }
     });
   }
 
@@ -110,6 +111,13 @@ export class KanbanComponent implements OnInit {
   }
 
   onDragOver(event: DragEvent): void {
-    event.preventDefault(); // Allow drop
+    event.preventDefault();
+    const column = (event.target as HTMLElement).closest('.flex-col');
+    if (column) column.classList.add('drop-target');
+  }
+
+  onDragLeave(event: DragEvent): void {
+    const column = (event.target as HTMLElement).closest('.flex-col');
+    if (column) column.classList.remove('drop-target');
   }
 }
