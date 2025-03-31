@@ -6,12 +6,13 @@ import { Task, PagedTaskResponse, TaskStatus } from '../models/task';
 import { SuccessResponse } from '../models/success-response';
 import { ErrorResponse } from '../models/error-response';
 import { MessageService } from 'primeng/api';
+import { BASE_URL } from '../../../config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaskService {
-  private apiUrl = 'http://localhost:8080/ultimateToDo/api/tasks';
+  private apiUrl = BASE_URL + '/tasks';
 
   constructor(
     private http: HttpClient,

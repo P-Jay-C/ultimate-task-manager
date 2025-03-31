@@ -10,6 +10,7 @@ import { ErrorResponse } from '../models/error-response';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { MessageService } from 'primeng/api';
+import { BASE_URL } from '../../../config';
 
 interface TodoJwtPayload {
   sub: string; // Email
@@ -26,7 +27,7 @@ interface TodoJwtPayload {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/ultimateToDo/api/auth';
+  private apiUrl = BASE_URL + '/auth';
   private authTokenKey = 'auth_token';
   private refreshTokenKey = 'refresh_token';
   private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
